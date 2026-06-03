@@ -2,6 +2,8 @@ from utils.skill_matcher import find_missing_skills
 from utils.skill_extractor import extract_skills
 from flask import Flask, render_template, request
 import os
+from tempfile import gettempdir
+from werkzeug.utils import secure_filename
 
 from utils.pdf_extractor import extract_text_from_pdf
 from utils.preprocessor import clean_text
@@ -11,8 +13,9 @@ from utils.matcher import calculate_similarity
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "resumes"
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", os.path.join(gettempdir(), "resumes"))
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
 @app.route("/")
@@ -31,10 +34,8 @@ def match_resume():
     if file.filename == "":
         return "No selected file"
 
-    filepath = os.path.join(
-      app.config["UPLOAD_FOLDER"],
-        file.filename
-    )
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
     file.save(filepath)
 
