@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Resume Analysis Result</title>
+            <style>
+                    body{
+                         font-family: Arial, sans-serif;
+                          margin:40px;
+                           background:#f4f6f9;
+                        }
+
+                    .container{
+                               background:white;
+                                padding:30px;
+                                 border-radius:10px;
+                                  box-shadow:0px 0px 10px rgba(0,0,0,0.1);
+                            }
+
+                    .score{
+                           text-align:center;
+                             padding:20px;
+                              border-radius:10px;
+                               margin-bottom:20px;
+                            }
+
+                    .low{
+                         background:#ffcccc;
+                          color:#cc0000;
+                        }
+
+                     .medium{
+                             background:#fff3cd;
+                              color:#856404;
+                            }
+
+                    .high{
+                          background:#d4edda;
+                           color:#155724;
+                        }
+
+
+                                h2{
+                                   border-bottom:2px solid #ddd;
+                                    padding-bottom:5px;
+                                  }
+
+                                ul{
+                                   line-height:1.8;
+                                  }
+
+                                a{
+                                  text-decoration:none;
+                                   color:white;
+                                    background:#007bff;
+                                     padding:10px 15px;
+                                      border-radius:5px;
+                                  }
+
+                                a:hover{
+                                        background:#0056b3;
+                                        }
+            </style>
+    </head>
+
+<body>
+
+<div class="container">
+    {% if score < 40 %}
+      <div class="score low">
+        <h1>{{ score }}%</h1>
+          <h2>Poor Match</h2>
+</div>
+
+{% elif score < 70 %}
+<div class="score medium">
+    <h1>{{ score }}%</h1>
+      <h2>Average Match</h2>
+</div>
+
+{% else %}
+<div class="score high">
+    <h1>{{ score }}%</h1>
+      <h2>Excellent Match</h2>
+</div>
+
+
+    {% endif %}
+       <h2>Resume Skills</h2>
+            <ul>
+                {% for skill in resume_skills %}
+                 <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+
+        <h2>Job Skills</h2>
+            <ul>
+                {% for skill in job_skills %}
+                  <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+
+        <h2>Missing Skills</h2>
+            <ul>
+                {% for skill in missing_skills %}
+                  <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+
+        <h2>ATS Recommendations</h2>
+            <ul>
+                {% for recommendation in recommendations %}
+                    <li>{{ recommendation }}</li>
+                {% endfor %}
+            </ul>
+
+        <h2>Learning Roadmap</h2>
+                {% for skill, topics in roadmap.items() %}
+        <h3>{{ skill }}</h3>
+
+            <ul>
+            {% for topic in topics %}
+                <li>{{ topic }}</li>
+            {% endfor %}
+            </ul>
+
+                {% endfor %}
+
+
+        <br>
+          <a href="/">Check Another Resume</a>
+
+
+</div>
+</body>
+</html>
