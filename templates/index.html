@@ -1,34 +1,169 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Smart Resume Screening</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resume Screening System</title>
+    <meta name="description" content="AI-powered resume screening for faster candidate matching and skill gap analysis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <a class="skip-link" href="#analysis-form">Skip to resume analysis</a>
 
-<h1>Smart Resume Screening System</h1>
+    <header class="site-header" aria-label="Primary">
+        <nav class="nav-shell">
+            <a class="brand" href="/" aria-label="Smart Resume Screening home">
+                <span class="brand-mark" aria-hidden="true">AI</span>
+                <span>Smart Resume Screening</span>
+            </a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+                <span class="theme-icon" aria-hidden="true">◐</span>
+                <span class="theme-label">Theme</span>
+            </button>
+        </nav>
+    </header>
 
-<form action="/match" method="POST" enctype="multipart/form-data">
+    <main>
+        <section class="hero-section">
+            <div class="hero-copy">
+                <p class="eyebrow">Recruiter-focused AI screening</p>
+                <h1>AI-Powered Resume Screening System</h1>
+                <p class="hero-subtitle">
+                    Instantly analyze resumes, match candidates against job requirements, identify missing skills, and make smarter hiring decisions.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#analysis-form">Analyze Resume</a>
+                    <a class="btn btn-secondary" href="#platform-preview">View Workflow</a>
+                </div>
+                <div class="hero-metrics" aria-label="Platform highlights">
+                    <div>
+                        <strong>5MB</strong>
+                        <span>PDF support</span>
+                    </div>
+                    <div>
+                        <strong>Live</strong>
+                        <span>Skill matching</span>
+                    </div>
+                    <div>
+                        <strong>ATS</strong>
+                        <span>Suggestions</span>
+                    </div>
+                </div>
+            </div>
 
-    <p>Upload Resume (PDF)</p>
-    <input type="file" name="resume" required>
+            <div class="hero-visual" id="platform-preview" aria-label="AI resume analytics illustration">
+                <svg class="hero-illustration" viewBox="0 0 720 560" role="img" aria-labelledby="hero-illustration-title">
+                    <title id="hero-illustration-title">Resume, AI hiring, and analytics dashboard illustration</title>
+                    <defs>
+                        <linearGradient id="panelGradient" x1="0" x2="1" y1="0" y2="1">
+                            <stop offset="0%" stop-color="#2563EB"/>
+                            <stop offset="100%" stop-color="#7C3AED"/>
+                        </linearGradient>
+                        <linearGradient id="softGradient" x1="0" x2="1" y1="0" y2="1">
+                            <stop offset="0%" stop-color="#DBEAFE"/>
+                            <stop offset="100%" stop-color="#EDE9FE"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="54" y="44" width="612" height="456" rx="32" fill="#FFFFFF"/>
+                    <rect x="88" y="78" width="230" height="372" rx="22" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="3"/>
+                    <rect x="118" y="112" width="76" height="92" rx="16" fill="url(#softGradient)"/>
+                    <path d="M217 124H282" stroke="#94A3B8" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M217 158H284" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M118 238H282" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M118 274H258" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M118 310H282" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M118 346H220" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
+                    <rect x="116" y="390" width="164" height="34" rx="17" fill="#DCFCE7"/>
+                    <path d="M144 407H248" stroke="#22C55E" stroke-width="8" stroke-linecap="round"/>
 
-    <br><br>
+                    <rect x="368" y="98" width="238" height="164" rx="24" fill="url(#panelGradient)"/>
+                    <circle cx="418" cy="152" r="30" fill="rgba(255,255,255,.22)"/>
+                    <path d="M418 132V172M398 152H438" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+                    <path d="M472 144H560" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" opacity=".9"/>
+                    <path d="M472 180H538" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" opacity=".65"/>
+                    <path d="M398 224H576" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" opacity=".35"/>
 
-    <p>Job Description</p>
+                    <rect x="368" y="302" width="238" height="148" rx="24" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="3"/>
+                    <rect x="404" y="380" width="28" height="42" rx="10" fill="#2563EB"/>
+                    <rect x="454" y="342" width="28" height="80" rx="10" fill="#7C3AED"/>
+                    <rect x="504" y="362" width="28" height="60" rx="10" fill="#22C55E"/>
+                    <rect x="554" y="324" width="28" height="98" rx="10" fill="#F59E0B"/>
+                    <path d="M398 336H470" stroke="#0F172A" stroke-width="10" stroke-linecap="round"/>
 
-    <textarea
-        name="job_description"
-        rows="10"
-        cols="60"
-        required></textarea>
+                    <circle cx="342" cy="280" r="46" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
+                    <path d="M324 280L338 294L364 262" stroke="#22C55E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M318 96C248 30 134 28 82 108" stroke="#BFDBFE" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M630 408C674 350 676 244 628 188" stroke="#DDD6FE" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            </div>
+        </section>
 
-    <br><br>
+        <section class="analysis-section" aria-labelledby="analysis-title">
+            <div class="empty-state" aria-label="Getting started">
+                <div class="empty-visual" aria-hidden="true">
+                    <svg viewBox="0 0 180 160">
+                        <rect x="34" y="18" width="84" height="116" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="4"/>
+                        <path d="M58 54H96M58 76H102M58 98H88" stroke="#94A3B8" stroke-width="8" stroke-linecap="round"/>
+                        <circle cx="126" cy="108" r="28" fill="#DBEAFE"/>
+                        <path d="M114 108L124 118L140 94" stroke="#2563EB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2>Upload a resume and job description to begin AI analysis.</h2>
+                    <p>Get a match score, extracted skills, missing skills, and practical recommendations in one dashboard.</p>
+                </div>
+            </div>
 
-    <button type="submit">
-        Calculate Match
-    </button>
+            <form id="analysis-form" class="upload-card" action="/match" method="POST" enctype="multipart/form-data">
+                <div class="section-heading">
+                    <p class="eyebrow">Candidate analysis</p>
+                    <h2 id="analysis-title">Analyze Resume</h2>
+                    <p>Upload a PDF resume and paste the role requirements below.</p>
+                </div>
 
-</form>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label for="resume">Resume Upload</label>
+                        <label class="drop-zone" for="resume" data-drop-zone>
+                            <input id="resume" type="file" name="resume" accept="application/pdf,.pdf" required data-file-input>
+                            <span class="drop-icon" aria-hidden="true">📄</span>
+                            <span class="drop-title" data-file-name>Drag &amp; Drop Resume Here</span>
+                            <span class="drop-meta">PDF only, max 5MB</span>
+                        </label>
+                        <p class="field-hint" id="resume-help">Use a clear, text-based PDF for best extraction accuracy.</p>
+                    </div>
 
+                    <div class="field-group">
+                        <div class="label-row">
+                            <label for="job_description">Job Description</label>
+                            <span class="char-counter" data-char-counter>0 characters</span>
+                        </div>
+                        <textarea
+                            id="job_description"
+                            name="job_description"
+                            rows="11"
+                            placeholder="Paste the job description here..."
+                            required
+                            data-job-textarea></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-analyze" type="submit" data-submit-button>
+                    <span class="btn-text">Analyze Resume</span>
+                    <span class="btn-loader" aria-hidden="true"></span>
+                </button>
+
+                <div class="processing-panel" role="status" aria-live="polite" hidden data-processing-panel>
+                    <span class="spinner" aria-hidden="true"></span>
+                    <span data-progress-message>Analyzing Resume...</span>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>

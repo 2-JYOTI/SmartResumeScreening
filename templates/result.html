@@ -1,135 +1,212 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Resume Analysis Result</title>
-            <style>
-                    body{
-                         font-family: Arial, sans-serif;
-                          margin:40px;
-                           background:#f4f6f9;
-                        }
-
-                    .container{
-                               background:white;
-                                padding:30px;
-                                 border-radius:10px;
-                                  box-shadow:0px 0px 10px rgba(0,0,0,0.1);
-                            }
-
-                    .score{
-                           text-align:center;
-                             padding:20px;
-                              border-radius:10px;
-                               margin-bottom:20px;
-                            }
-
-                    .low{
-                         background:#ffcccc;
-                          color:#cc0000;
-                        }
-
-                     .medium{
-                             background:#fff3cd;
-                              color:#856404;
-                            }
-
-                    .high{
-                          background:#d4edda;
-                           color:#155724;
-                        }
-
-
-                                h2{
-                                   border-bottom:2px solid #ddd;
-                                    padding-bottom:5px;
-                                  }
-
-                                ul{
-                                   line-height:1.8;
-                                  }
-
-                                a{
-                                  text-decoration:none;
-                                   color:white;
-                                    background:#007bff;
-                                     padding:10px 15px;
-                                      border-radius:5px;
-                                  }
-
-                                a:hover{
-                                        background:#0056b3;
-                                        }
-            </style>
-    </head>
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Result</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
 <body>
+    <a class="skip-link" href="#results-dashboard">Skip to results</a>
 
-<div class="container">
-    {% if score < 40 %}
-      <div class="score low">
-        <h1>{{ score }}%</h1>
-          <h2>Poor Match</h2>
-</div>
+    <header class="site-header" aria-label="Primary">
+        <nav class="nav-shell">
+            <a class="brand" href="/" aria-label="Smart Resume Screening home">
+                <span class="brand-mark" aria-hidden="true">AI</span>
+                <span>Smart Resume Screening</span>
+            </a>
+            <div class="nav-actions">
+                <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
+                    <span class="theme-icon" aria-hidden="true">◐</span>
+                    <span class="theme-label">Theme</span>
+                </button>
+                <button class="btn btn-secondary btn-small" type="button" data-download-report>Download Report</button>
+                <a class="btn btn-primary btn-small" href="/">New Analysis</a>
+            </div>
+        </nav>
+    </header>
 
-{% elif score < 70 %}
-<div class="score medium">
-    <h1>{{ score }}%</h1>
-      <h2>Average Match</h2>
-</div>
+    <main class="dashboard-shell fade-in" id="results-dashboard">
+        <section class="dashboard-hero">
+            <div>
+                <p class="eyebrow">AI screening report</p>
+                <h1>Candidate Match Dashboard</h1>
+                <p>Review match score, detected skills, missing skills, and AI recommendations for the uploaded resume.</p>
+            </div>
+            <div class="report-summary" aria-label="Report summary">
+                <span>Resume Score Gauge</span>
+                {% if score >= 90 %}
+                    <strong class="success-text">Excellent Fit</strong>
+                {% elif score >= 70 %}
+                    <strong class="warning-text">Strong Potential</strong>
+                {% else %}
+                    <strong class="danger-text">Needs Improvement</strong>
+                {% endif %}
+            </div>
+        </section>
 
-{% else %}
-<div class="score high">
-    <h1>{{ score }}%</h1>
-      <h2>Excellent Match</h2>
-</div>
+        <section class="dashboard-grid">
+            <article class="result-card score-card {% if score >= 90 %}score-success{% elif score >= 70 %}score-warning{% else %}score-danger{% endif %}">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Match score</p>
+                        <h2>Resume Fit</h2>
+                    </div>
+                    <span class="status-dot" aria-hidden="true"></span>
+                </div>
+                <div
+                    class="score-ring"
+                    style="--score: {{ score }};"
+                    data-score="{{ score }}"
+                    role="img"
+                    aria-label="Resume match score {{ score }} percent">
+                    <div class="score-ring-inner">
+                        <strong><span data-score-counter>{{ score }}</span>%</strong>
+                        <span>Match</span>
+                    </div>
+                </div>
+                {% if score >= 90 %}
+                    <p class="score-caption">This resume closely aligns with the job requirements.</p>
+                {% elif score >= 70 %}
+                    <p class="score-caption">This candidate is promising, with a few skill gaps to review.</p>
+                {% else %}
+                    <p class="score-caption">This resume needs stronger alignment with the target role.</p>
+                {% endif %}
+            </article>
 
+            <article class="result-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Extracted from resume</p>
+                        <h2>Skills Found</h2>
+                    </div>
+                    <span class="count-pill">{{ resume_skills|length }}</span>
+                </div>
+                <div class="chip-group">
+                    {% for skill in resume_skills %}
+                        <span class="skill-chip">{{ skill }}</span>
+                    {% else %}
+                        <p class="muted-text">No matching skills were detected in the uploaded resume.</p>
+                    {% endfor %}
+                </div>
+            </article>
 
-    {% endif %}
-       <h2>Resume Skills</h2>
-            <ul>
-                {% for skill in resume_skills %}
-                 <li>{{ skill }}</li>
-                {% endfor %}
-            </ul>
+            <article class="result-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Job requirement match</p>
+                        <h2>Missing Skills</h2>
+                    </div>
+                    <span class="count-pill warning-pill">{{ missing_skills|length }}</span>
+                </div>
+                <div class="chip-group">
+                    {% for skill in missing_skills %}
+                        <span class="skill-chip missing-chip"><span aria-hidden="true">!</span>{{ skill }}</span>
+                    {% else %}
+                        <p class="muted-text">No missing skills detected. The resume covers the tracked requirements well.</p>
+                    {% endfor %}
+                </div>
+            </article>
 
-        <h2>Job Skills</h2>
-            <ul>
-                {% for skill in job_skills %}
-                  <li>{{ skill }}</li>
-                {% endfor %}
-            </ul>
+            <article class="result-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Role keywords</p>
+                        <h2>Job Skills</h2>
+                    </div>
+                    <span class="count-pill">{{ job_skills|length }}</span>
+                </div>
+                <div class="chip-group">
+                    {% for skill in job_skills %}
+                        <span class="skill-chip job-chip">{{ skill }}</span>
+                    {% else %}
+                        <p class="muted-text">No tracked skills were found in the job description.</p>
+                    {% endfor %}
+                </div>
+            </article>
 
-        <h2>Missing Skills</h2>
-            <ul>
-                {% for skill in missing_skills %}
-                  <li>{{ skill }}</li>
-                {% endfor %}
-            </ul>
+            <article class="result-card wide-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">AI suggestions</p>
+                        <h2>Recommendations</h2>
+                    </div>
+                </div>
+                <ul class="recommendation-list">
+                    {% for recommendation in recommendations %}
+                        <li>{{ recommendation }}</li>
+                    {% else %}
+                        <li>Keep the resume focused on measurable impact, role keywords, and recent project outcomes.</li>
+                    {% endfor %}
+                    {% for skill, topics in roadmap.items() %}
+                        <li>Learn {{ skill }} fundamentals: {{ topics|join(", ") }}.</li>
+                    {% endfor %}
+                </ul>
+            </article>
 
-        <h2>ATS Recommendations</h2>
-            <ul>
-                {% for recommendation in recommendations %}
-                    <li>{{ recommendation }}</li>
-                {% endfor %}
-            </ul>
+            <article class="result-card wide-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Interview-ready view</p>
+                        <h2>Candidate Ranking Table</h2>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Candidate</th>
+                                <th scope="col">Match</th>
+                                <th scope="col">Skills Found</th>
+                                <th scope="col">Missing Skills</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Uploaded Resume</td>
+                                <td>{{ score }}%</td>
+                                <td>{{ resume_skills|length }}</td>
+                                <td>{{ missing_skills|length }}</td>
+                                <td>
+                                    {% if score >= 90 %}
+                                        Shortlist
+                                    {% elif score >= 70 %}
+                                        Review
+                                    {% else %}
+                                        Improve
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
 
-        <h2>Learning Roadmap</h2>
-                {% for skill, topics in roadmap.items() %}
-        <h3>{{ skill }}</h3>
+            <article class="result-card wide-card" data-history-card>
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Browser history</p>
+                        <h2>Recent Analyses</h2>
+                    </div>
+                </div>
+                <div class="history-list" data-history-list>
+                    <p class="muted-text">Recent analyses will appear here after this report is saved locally.</p>
+                </div>
+            </article>
+        </section>
+    </main>
 
-            <ul>
-            {% for topic in topics %}
-                <li>{{ topic }}</li>
-            {% endfor %}
-            </ul>
-
-                {% endfor %}
-
-
-        <br>
-          <a href="/">Check Another Resume</a>
-
-
-</div>
+    <script>
+        window.resumeAnalysisResult = {
+            score: Number("{{ score }}"),
+            resumeSkills: Number("{{ resume_skills|length }}"),
+            missingSkills: Number("{{ missing_skills|length }}")
+        };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>
