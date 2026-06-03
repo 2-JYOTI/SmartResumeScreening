@@ -61,14 +61,33 @@ fileInput?.addEventListener("change", setFileName);
 
 const form = document.querySelector("#analysis-form");
 const submitButton = document.querySelector("[data-submit-button]");
+const submitButtonText = submitButton?.querySelector(".btn-text");
 const processingPanel = document.querySelector("[data-processing-panel]");
 const progressMessage = document.querySelector("[data-progress-message]");
 const messages = ["Analyzing Resume...", "Extracting Skills...", "Calculating Match Score..."];
 
-form?.addEventListener("submit", () => {
+form?.addEventListener("submit", (event) => {
+    const selectedFile = fileInput?.files?.[0];
+
+    if (selectedFile) {
+        const isPdf = selectedFile.type === "application/pdf" || selectedFile.name.toLowerCase().endsWith(".pdf");
+        const isAllowedSize = selectedFile.size <= 5 * 1024 * 1024;
+
+        if (!isPdf || !isAllowedSize) {
+            event.preventDefault();
+            alert("Please upload a PDF file under 5MB.");
+            return;
+        }
+    }
+
     document.body.classList.add("is-processing");
     submitButton?.classList.add("is-loading");
     submitButton?.setAttribute("aria-busy", "true");
+    submitButton?.setAttribute("disabled", "true");
+
+    if (submitButtonText) {
+        submitButtonText.textContent = "Analyzing Resume...";
+    }
 
     if (processingPanel) {
         processingPanel.hidden = false;
