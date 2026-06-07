@@ -37,7 +37,7 @@
                 <p>Review match score, detected skills, missing skills, and AI recommendations for the uploaded resume.</p>
             </div>
             <div class="report-summary" aria-label="Report summary">
-                <span>Resume Score Gauge</span>
+                <span>Final ATS Score</span>
                 {% if score >= 90 %}
                     <strong class="success-text">Excellent Fit</strong>
                 {% elif score >= 70 %}
@@ -52,7 +52,7 @@
             <article class="result-card score-card {% if score >= 90 %}score-success{% elif score >= 70 %}score-warning{% else %}score-danger{% endif %}">
                 <div class="card-header">
                     <div>
-                        <p class="eyebrow">Match score</p>
+                        <p class="eyebrow">Weighted ATS score</p>
                         <h2>Resume Fit</h2>
                     </div>
                     <span class="status-dot" aria-hidden="true"></span>
@@ -65,8 +65,16 @@
                     aria-label="Resume match score {{ score }} percent">
                     <div class="score-ring-inner">
                         <strong><span data-score-counter>{{ score }}</span>%</strong>
-                        <span>Match</span>
+                        <span>Final ATS</span>
                     </div>
+                </div>
+                <div class="score-breakdown" aria-label="ATS score breakdown">
+                    {% for label, value in score_breakdown.items() %}
+                        <div class="score-breakdown-row">
+                            <span>{{ label }}</span>
+                            <strong>{{ value }}%</strong>
+                        </div>
+                    {% endfor %}
                 </div>
                 {% if score >= 90 %}
                     <p class="score-caption">This resume closely aligns with the job requirements.</p>
@@ -83,8 +91,9 @@
                         <p class="eyebrow">Extracted from resume</p>
                         <h2>Skills Found</h2>
                     </div>
-                    <span class="count-pill">{{ resume_skills|length }}</span>
+                    <span class="count-pill">{{ resume_skills|length }} Skills</span>
                 </div>
+                <p class="metric-line">Matched Skills: <strong>{{ matched_skills_count }}</strong></p>
                 <div class="chip-group">
                     {% for skill in resume_skills %}
                         <span class="skill-chip">{{ skill }}</span>
@@ -100,11 +109,15 @@
                         <p class="eyebrow">Job requirement match</p>
                         <h2>Missing Skills</h2>
                     </div>
-                    <span class="count-pill warning-pill">{{ missing_skills|length }}</span>
+                    <span class="count-pill warning-pill">{{ missing_skills_count }}</span>
                 </div>
-                <div class="chip-group">
+                <div class="priority-list">
                     {% for skill in missing_skills %}
-                        <span class="skill-chip missing-chip"><span aria-hidden="true">!</span>{{ skill }}</span>
+                        <div class="priority-item">
+                            <span class="skill-chip missing-chip"><span aria-hidden="true">!</span>{{ skill.name }}</span>
+                            <span class="priority-badge {{ skill.priority|lower|replace(' ', '-') }}">{{ skill.priority }}</span>
+                            <small>{{ skill.recommendation }}</small>
+                        </div>
                     {% else %}
                         <p class="muted-text">No missing skills detected. The resume covers the tracked requirements well.</p>
                     {% endfor %}
@@ -115,16 +128,47 @@
                 <div class="card-header">
                     <div>
                         <p class="eyebrow">Role keywords</p>
-                        <h2>Job Skills</h2>
+                        <h2>Job Requirements</h2>
                     </div>
-                    <span class="count-pill">{{ job_skills|length }}</span>
+                    <span class="count-pill">{{ required_skills_count }}</span>
                 </div>
-                <div class="chip-group">
-                    {% for skill in job_skills %}
-                        <span class="skill-chip job-chip">{{ skill }}</span>
+                <div class="requirement-counts">
+                    <span>Required: <strong>{{ required_skills_count }}</strong></span>
+                    <span>Matched: <strong>{{ matched_skills_count }}</strong></span>
+                    <span>Missing: <strong>{{ missing_skills_count }}</strong></span>
+                </div>
+                <div class="category-list">
+                    {% for category, skills in job_categories.items() %}
+                        <section>
+                            <h3>{{ category }}</h3>
+                            <div class="chip-group">
+                                {% for skill in skills %}
+                                    <span class="skill-chip job-chip">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </section>
                     {% else %}
                         <p class="muted-text">No tracked skills were found in the job description.</p>
                     {% endfor %}
+                </div>
+            </article>
+
+            <article class="result-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Recruiter features</p>
+                        <h2>ATS Compatibility</h2>
+                    </div>
+                </div>
+                <div class="mini-metrics">
+                    <div>
+                        <span>ATS Compatibility</span>
+                        <strong>{{ ats_compatibility_score }}%</strong>
+                    </div>
+                    <div>
+                        <span>Keyword Optimization</span>
+                        <strong>{{ keyword_optimization_score }}%</strong>
+                    </div>
                 </div>
             </article>
 
@@ -141,10 +185,53 @@
                     {% else %}
                         <li>Keep the resume focused on measurable impact, role keywords, and recent project outcomes.</li>
                     {% endfor %}
-                    {% for skill, topics in roadmap.items() %}
-                        <li>Learn {{ skill }} fundamentals: {{ topics|join(", ") }}.</li>
-                    {% endfor %}
                 </ul>
+            </article>
+
+            <article class="result-card wide-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Recruiter feedback</p>
+                        <h2>Strengths &amp; Weaknesses</h2>
+                    </div>
+                </div>
+                <div class="feedback-grid">
+                    <section>
+                        <h3>Resume Strengths</h3>
+                        <ul class="recommendation-list compact-list">
+                            {% for strength in strengths %}
+                                <li>{{ strength }}</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Resume Weaknesses</h3>
+                        <ul class="recommendation-list compact-list">
+                            {% for weakness in weaknesses %}
+                                <li>{{ weakness }}</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                </div>
+            </article>
+
+            <article class="result-card wide-card">
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">Detailed analysis</p>
+                        <h2>Experience, Education, Projects &amp; Certifications</h2>
+                    </div>
+                </div>
+                <div class="analysis-matrix">
+                    {% for label, value in score_breakdown.items() %}
+                        {% if label != "Skills Match" %}
+                            <div>
+                                <span>{{ label }}</span>
+                                <strong>{{ value }}%</strong>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </article>
 
             <article class="result-card wide-card">
@@ -170,7 +257,7 @@
                                 <td>Uploaded Resume</td>
                                 <td>{{ score }}%</td>
                                 <td>{{ resume_skills|length }}</td>
-                                <td>{{ missing_skills|length }}</td>
+                                <td>{{ missing_skills_count }}</td>
                                 <td>
                                     {% if score >= 90 %}
                                         Shortlist
@@ -203,8 +290,8 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <h2>Smart Resume Screening System</h2>
-            <p>Built with ❤️ using Python, NLP, and Machine Learning.</p>
-            <p class="creator">Created by <strong>Jyoti Singh</strong></p>
+            <p>Powered by AI, NLP &amp; Machine Learning</p>
+            <p class="creator">Created by <a href="https://github.com/2-JYOTI" target="_blank" rel="noopener noreferrer"><strong>Jyoti Singh</strong></a></p>
             <p class="copyright">© 2026 All Rights Reserved</p>
         </div>
     </footer>
@@ -213,7 +300,7 @@
         window.resumeAnalysisResult = {
             score: Number("{{ score }}"),
             resumeSkills: Number("{{ resume_skills|length }}"),
-            missingSkills: Number("{{ missing_skills|length }}")
+            missingSkills: Number("{{ missing_skills_count }}")
         };
     </script>
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>

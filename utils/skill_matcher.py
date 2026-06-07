@@ -1,10 +1,12 @@
-def find_missing_skills(resume_skills, job_skills):
+from utils.ats_analyzer import normalize_text
 
+
+def find_missing_skills(resume_skills, job_skills):
+    resume_lookup = {normalize_text(skill) for skill in resume_skills}
     missing = []
 
     for skill in job_skills:
-        if skill not in resume_skills:
+        if normalize_text(skill) not in resume_lookup:
             missing.append(skill)
 
-    return missing
-
+    return sorted(set(missing))

@@ -1,10 +1,11 @@
 from collections import Counter
 from math import log
+from utils.ats_analyzer import tokenize
 
 def create_vectors(resume_text, job_description):
     documents = [
-        resume_text.split(),
-        job_description.split()
+        tokenize(resume_text),
+        tokenize(job_description)
     ]
     vocabulary = sorted(set(documents[0]) | set(documents[1]))
     document_count = len(documents)
