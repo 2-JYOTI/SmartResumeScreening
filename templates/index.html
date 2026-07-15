@@ -1,178 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Resume Screening System</title>
-    <meta name="description" content="AI-powered resume screening for faster candidate matching and skill gap analysis.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free recruiter-focused resume analysis with role match scores, skills, gaps, and interview guidance.">
+  <title>Smart Resume Screening | Clearer candidate decisions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <a class="skip-link" href="#analysis-form">Skip to resume analysis</a>
+  <a class="skip-link" href="#analysis-tool">Skip to free analysis</a>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Smart Resume Screening home"><span class="brand-mark">AI</span><span>Smart Resume Screening</span></a>
+      <div class="desktop-nav"><a href="#how-it-works">How it works</a><a href="{{ url_for('history') }}">Saved analyses</a><a href="#privacy">Privacy</a><button class="text-button" data-signup>Sign in</button><a class="button button-small" href="#analysis-tool">Try it free</a></div>
+      <div class="mobile-actions"><button class="text-button" data-signup>Sign in</button><button class="menu-button" aria-expanded="false" aria-controls="mobile-menu" data-menu aria-label="Open navigation"><span></span><span></span><span></span></button></div>
+    </nav>
+    <div class="mobile-menu container" id="mobile-menu" hidden><a href="#how-it-works">How it works</a><a href="#privacy">Privacy</a><a class="button" href="#analysis-tool">Try it free</a></div>
+  </header>
 
-    <header class="site-header" aria-label="Primary">
-        <nav class="nav-shell">
-            <a class="brand" href="/" aria-label="Smart Resume Screening home">
-                <span class="brand-mark" aria-hidden="true">AI</span>
-                <span>Smart Resume Screening</span>
-            </a>
-            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">
-                <span class="theme-icon" aria-hidden="true">◐</span>
-                <span class="theme-label">Theme</span>
-            </button>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero-section">
-            <div class="hero-copy">
-                <p class="eyebrow">Recruiter-focused AI screening</p>
-                <h1>AI-Powered Smart Resume Screening System</h1>
-                <p class="hero-subtitle">
-                    Analyze resumes instantly, match candidates against job requirements, identify skill gaps, and make smarter hiring decisions.
-                </p>
-                <div class="hero-actions">
-                    <a class="btn btn-primary" href="#analysis-form">Analyze Resume</a>
-                    <a class="btn btn-secondary" href="#platform-preview">View Workflow</a>
-                </div>
-                <div class="hero-metrics" aria-label="Platform highlights">
-                    <div>
-                        <strong>5MB</strong>
-                        <span>PDF support</span>
-                    </div>
-                    <div>
-                        <strong>Live</strong>
-                        <span>Skill matching</span>
-                    </div>
-                    <div>
-                        <strong>ATS</strong>
-                        <span>Suggestions</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero-visual" id="platform-preview" aria-label="AI resume analytics illustration">
-                <svg class="hero-illustration" viewBox="0 0 720 560" role="img" aria-labelledby="hero-illustration-title">
-                    <title id="hero-illustration-title">Resume, AI hiring, and analytics dashboard illustration</title>
-                    <defs>
-                        <linearGradient id="panelGradient" x1="0" x2="1" y1="0" y2="1">
-                            <stop offset="0%" stop-color="#2563EB"/>
-                            <stop offset="100%" stop-color="#7C3AED"/>
-                        </linearGradient>
-                        <linearGradient id="softGradient" x1="0" x2="1" y1="0" y2="1">
-                            <stop offset="0%" stop-color="#DBEAFE"/>
-                            <stop offset="100%" stop-color="#EDE9FE"/>
-                        </linearGradient>
-                    </defs>
-                    <rect x="54" y="44" width="612" height="456" rx="32" fill="#FFFFFF"/>
-                    <rect x="88" y="78" width="230" height="372" rx="22" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="3"/>
-                    <rect x="118" y="112" width="76" height="92" rx="16" fill="url(#softGradient)"/>
-                    <path d="M217 124H282" stroke="#94A3B8" stroke-width="12" stroke-linecap="round"/>
-                    <path d="M217 158H284" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
-                    <path d="M118 238H282" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
-                    <path d="M118 274H258" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
-                    <path d="M118 310H282" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
-                    <path d="M118 346H220" stroke="#CBD5E1" stroke-width="10" stroke-linecap="round"/>
-                    <rect x="116" y="390" width="164" height="34" rx="17" fill="#DCFCE7"/>
-                    <path d="M144 407H248" stroke="#22C55E" stroke-width="8" stroke-linecap="round"/>
-
-                    <rect x="368" y="98" width="238" height="164" rx="24" fill="url(#panelGradient)"/>
-                    <circle cx="418" cy="152" r="30" fill="rgba(255,255,255,.22)"/>
-                    <path d="M418 132V172M398 152H438" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
-                    <path d="M472 144H560" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" opacity=".9"/>
-                    <path d="M472 180H538" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" opacity=".65"/>
-                    <path d="M398 224H576" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" opacity=".35"/>
-
-                    <rect x="368" y="302" width="238" height="148" rx="24" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="3"/>
-                    <rect x="404" y="380" width="28" height="42" rx="10" fill="#2563EB"/>
-                    <rect x="454" y="342" width="28" height="80" rx="10" fill="#7C3AED"/>
-                    <rect x="504" y="362" width="28" height="60" rx="10" fill="#22C55E"/>
-                    <rect x="554" y="324" width="28" height="98" rx="10" fill="#F59E0B"/>
-                    <path d="M398 336H470" stroke="#0F172A" stroke-width="10" stroke-linecap="round"/>
-
-                    <circle cx="342" cy="280" r="46" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="3"/>
-                    <path d="M324 280L338 294L364 262" stroke="#22C55E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M318 96C248 30 134 28 82 108" stroke="#BFDBFE" stroke-width="12" stroke-linecap="round"/>
-                    <path d="M630 408C674 350 676 244 628 188" stroke="#DDD6FE" stroke-width="12" stroke-linecap="round"/>
-                </svg>
-            </div>
-        </section>
-
-        <section class="analysis-section" aria-labelledby="analysis-title">
-            <div class="empty-state" aria-label="Getting started">
-                <div class="empty-visual" aria-hidden="true">
-                    <svg viewBox="0 0 180 160">
-                        <rect x="34" y="18" width="84" height="116" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="4"/>
-                        <path d="M58 54H96M58 76H102M58 98H88" stroke="#94A3B8" stroke-width="8" stroke-linecap="round"/>
-                        <circle cx="126" cy="108" r="28" fill="#DBEAFE"/>
-                        <path d="M114 108L124 118L140 94" stroke="#2563EB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2>Upload a resume and job description to start AI-powered analysis.</h2>
-                    <p>Get a match score, extracted skills, missing skills, and practical recommendations in one dashboard.</p>
-                </div>
-            </div>
-
-            <form id="analysis-form" class="upload-card" action="/match" method="POST" enctype="multipart/form-data">
-                <div class="section-heading">
-                    <p class="eyebrow">Candidate analysis</p>
-                    <h2 id="analysis-title">Analyze Resume</h2>
-                    <p>Upload a PDF resume and paste the role requirements below.</p>
-                </div>
-
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label for="resume">Resume Upload</label>
-                        <label class="drop-zone" for="resume" data-drop-zone>
-                            <input id="resume" type="file" name="resume" accept="application/pdf,.pdf" required data-file-input>
-                            <span class="drop-icon" aria-hidden="true">📄</span>
-                            <span class="drop-title" data-file-name>Drag &amp; Drop Resume Here</span>
-                            <span class="drop-meta">PDF only • Maximum 5MB</span>
-                        </label>
-                        <p class="field-hint" id="resume-help">Use a clear, text-based PDF for best extraction accuracy.</p>
-                    </div>
-
-                    <div class="field-group">
-                        <div class="label-row">
-                            <label for="job_description">Job Description</label>
-                            <span class="char-counter" data-char-counter>0 characters</span>
-                        </div>
-                        <textarea
-                            id="job_description"
-                            name="job_description"
-                            rows="11"
-                            placeholder="Paste the job description here..."
-                            required
-                            data-job-textarea></textarea>
-                    </div>
-                </div>
-
-                <button class="btn btn-analyze" type="submit" data-submit-button>
-                    <span class="btn-text">Analyze Resume</span>
-                    <span class="btn-loader" aria-hidden="true"></span>
-                </button>
-
-                <div class="processing-panel" role="status" aria-live="polite" hidden data-processing-panel>
-                    <span class="spinner" aria-hidden="true"></span>
-                    <span data-progress-message>Analyzing Resume...</span>
-                </div>
-            </form>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <h2>Smart Resume Screening System</h2>
-            <p>Powered by AI, NLP &amp; Machine Learning</p>
-            <p class="creator">Created by <a href="https://github.com/2-JYOTI" target="_blank" rel="noopener noreferrer"><strong>Jyoti Singh</strong></a></p>
-            <p class="copyright">© 2026 All Rights Reserved</p>
+  <main id="top">
+    <section class="hero container reveal">
+      <div class="hero-copy">
+        <p class="eyebrow">Recruiter-focused screening</p>
+        <h1>Shortlist the right candidates in minutes.</h1>
+        <p class="lead">Upload a resume and job description to see an instant role-match score, key skills, gaps, and interview-ready recommendations.</p>
+        <div class="hero-actions"><a class="button button-large" href="#analysis-tool" data-analysis-link>Analyze a resume for free</a><a class="link-button" href="#result-preview">See a sample report <span aria-hidden="true">→</span></a></div>
+        <p class="reassurance"><span class="check-icon">✓</span> No account or credit card required.</p>
+        <p class="privacy-line">Private by design. Your files are encrypted and automatically deleted after analysis.</p>
+      </div>
+      <div class="dashboard-wrap" aria-label="Candidate analysis preview">
+        <div class="dashboard-card">
+          <div class="dashboard-head"><div><span class="mini-label">Candidate analysis</span><strong>Jordan Taylor</strong><span>Product Designer</span></div><span class="status-pill">Ready</span></div>
+          <div class="score-row"><div class="score-ring"><span>82<small>%</small></span></div><div><strong class="match-title">Strong role match</strong><p>Great alignment across core product design skills.</p></div></div>
+          <div class="preview-grid"><div><span class="mini-label">Top strengths</span><ul class="tag-list"><li>Product strategy</li><li>Figma</li><li>User research</li></ul></div><div><span class="mini-label">Gaps to explore</span><ul class="tag-list amber"><li>B2B SaaS</li><li>Design systems</li></ul></div></div>
+          <button class="dashboard-action" data-sample-focus>View interview questions <span>→</span></button>
         </div>
-    </footer>
+        <p class="dashboard-caption">See what matters before the interview.</p>
+      </div>
+    </section>
 
-    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <section class="section container reveal" aria-labelledby="benefits-heading">
+      <p class="eyebrow">Make better first-pass decisions</p><h2 id="benefits-heading">Everything you need for a stronger shortlist.</h2>
+      <div class="benefit-grid">
+        <article class="benefit-card"><div class="icon-box">◎</div><h3>Instant match score</h3><p>See how closely a candidate aligns with the role, without manually comparing every requirement.</p></article>
+        <article class="benefit-card"><div class="icon-box">✦</div><h3>Skills and gaps</h3><p>Surface relevant strengths, missing requirements, and areas worth exploring in the interview.</p></article>
+        <article class="benefit-card"><div class="icon-box">☷</div><h3>Interview guidance</h3><p>Turn the analysis into practical, role-specific questions for a more focused conversation.</p></article>
+      </div>
+    </section>
+
+    <section class="section how-section" id="how-it-works" aria-labelledby="how-heading"><div class="container reveal"><h2 id="how-heading">From resume to a clearer decision in three steps.</h2><div class="steps"><article><span>01</span><h3>Add the resume</h3><p>Upload a text-based PDF resume. We’ll extract the relevant experience and skills.</p></article><article><span>02</span><h3>Paste the job description</h3><p>Add the role requirements, responsibilities, and must-have skills.</p></article><article><span>03</span><h3>Review the analysis</h3><p>Get a match score, strengths, skill gaps, and suggestions for the next interview.</p></article></div><div class="center"><a class="button" href="#analysis-tool" data-analysis-link>Analyze a resume for free</a></div></div></section>
+
+    <section class="section container reveal" id="analysis-tool" aria-labelledby="analysis-heading">
+      <div class="analysis-card"><div class="analysis-intro"><p class="eyebrow">Start your free analysis</p><h2 id="analysis-heading">See the candidate-to-role fit.</h2><p>Upload a resume and add the job description. You’ll get an instant analysis—no account required.</p></div>
+        <form id="analysis-form" action="{{ url_for('match_resume') }}" method="post" enctype="multipart/form-data" novalidate>
+          <div class="form-grid"><div class="field"><label>Resume</label><input type="file" id="resume" name="resume" accept="application/pdf,.pdf" hidden><div class="drop-zone" data-drop-zone tabindex="0" role="button" aria-label="Choose a PDF resume"><div data-upload-empty><div class="upload-icon">⇧</div><strong>Drop a resume here</strong><span>or choose a PDF from your device</span><button class="button button-outline" type="button" data-file-button>Choose PDF</button><small>PDF only · Up to 5 MB · Text-based PDFs work best</small></div><div class="selected-file" data-upload-selected hidden><span class="pdf-icon">PDF</span><div><strong data-file-name>jordan-taylor-resume.pdf</strong><span>Ready to analyze</span></div><button type="button" class="remove-file" data-remove-file aria-label="Remove selected file">×</button></div></div><p class="field-help">Your PDF is deleted immediately after analysis. The report summary is saved in your database.</p><p class="error-message" data-file-error></p></div>
+          <div class="field"><div class="label-row"><label for="job-description">Job description</label><span data-counter>0 characters</span></div><textarea id="job-description" name="job_description" rows="12" placeholder="Paste the job description, responsibilities, or must-have skills here…"></textarea><p class="field-help">Include the key requirements for the most useful match analysis.</p><p class="error-message" data-job-error></p></div></div>
+          <button class="button submit-button" type="submit" data-submit><span data-submit-text>Analyze resume for free</span><span class="spinner" hidden></span></button><p class="analysis-helper">Most analyses are ready in under a minute.</p><button type="button" class="sample-link" data-sample>Just exploring? Try with sample data.</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="container result-section" id="result-preview" aria-live="polite" hidden data-result><div class="result-card"><div class="result-header"><div><p class="eyebrow">Candidate analysis complete</p><h2>Jordan Taylor <span>· Product Designer</span></h2></div><span class="status-pill">Analysis ready</span></div><div class="result-summary"><div class="big-score"><strong>82%</strong><span>Strong role match</span></div><p>This candidate matches the role’s core product-design and user-research requirements. Explore B2B SaaS and design-system experience during the interview.</p></div><div class="result-grid"><article><h3>Strengths</h3><ul><li>Product strategy</li><li>Figma and prototyping</li><li>User research</li><li>Cross-functional collaboration</li></ul></article><article><h3>Explore further</h3><ul class="explore-list"><li>B2B SaaS experience</li><li>Design-system ownership</li><li>Enterprise product complexity</li></ul></article><article class="question-card"><span class="mini-label">Suggested interview question</span><p>“Tell me about a product decision you changed after user research. What did you learn, and what was the outcome?”</p></article></div><div class="account-prompt"><div><h3>Save this report and compare candidates.</h3><p>Create a free account to access this analysis later, export it, and keep your candidate history in one place.</p></div><div><button class="button" data-signup>Create free account</button><button class="continue-button" type="button">Continue without saving</button></div></div></div></section>
+
+    <section class="section container reveal" id="privacy"><div class="privacy-card"><div class="lock-icon">⌑</div><div><h2>Private by design. Human decisions first.</h2><p>Files are encrypted in transit, used only for your requested analysis, and automatically deleted according to our retention policy. Smart Resume Screening supports recruiter judgment—it should not be the sole basis for hiring decisions.</p><div class="privacy-links"><a href="#privacy">Privacy Policy</a><a href="#privacy">Data Handling</a><a href="#privacy">Responsible Use</a></div></div></div></section>
+
+    <section class="section container reveal faq" aria-labelledby="faq-heading"><h2 id="faq-heading">Questions, answered.</h2><div class="accordion"><details><summary>Is Smart Resume Screening free?</summary><p>Yes. You can run your first analysis for free with no credit card. Create a free account when you want to save reports or manage candidate history.</p></details><details><summary>What does the analysis include?</summary><p>You’ll receive a role-match score, matching skills, potential gaps, and practical suggestions for what to explore during the interview.</p></details><details><summary>What happens to the resumes I upload?</summary><p>Your files are used only to generate the requested analysis. See our Privacy Policy for details about data retention and deletion.</p></details><details><summary>Will the tool make hiring decisions for me?</summary><p>No. It is designed to support—not replace—recruiter judgment and structured hiring processes.</p></details><details><summary>What file types can I upload?</summary><p>Currently, upload text-based PDF resumes up to 5 MB.</p></details></div></section>
+  </main>
+  <footer><div class="container footer-grid"><div><a class="brand" href="#top"><span class="brand-mark">AI</span><span>Smart Resume Screening</span></a><p>Clearer candidate comparisons, faster first-pass screening.</p></div><div class="footer-links"><a href="#how-it-works">How it works</a><a href="#privacy">Privacy Policy</a><a href="#privacy">Terms of Use</a><a href="#privacy">Responsible Use</a><a href="mailto:support@example.com">Contact support</a><button class="text-button" data-signup>Sign in</button></div></div><p class="copyright container">© 2026 Smart Resume Screening. All rights reserved.</p></footer>
+  <div class="mobile-cta" hidden data-mobile-cta><a class="button" href="#analysis-tool">Analyze free</a></div>
+  <div class="modal-backdrop" hidden data-modal><section class="signup-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><button class="close-modal" data-close-modal aria-label="Close sign up">×</button><p class="eyebrow">Free account</p><h2 id="modal-title">Save your next analysis.</h2><p>Create an account to keep reports and compare candidates.</p><label for="email">Work email</label><input id="email" type="email" placeholder="you@company.com"><button class="button" data-create-account>Create free account</button><p class="modal-message" data-modal-message></p></section></div>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>

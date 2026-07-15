@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Analyses | Smart Resume Screening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="site-header"><nav class="nav container"><a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">AI</span><span>Smart Resume Screening</span></a><a class="button button-small" href="{{ url_for('home') }}#analysis-tool">New analysis</a></nav></header>
+  <main class="container section">
+    <p class="eyebrow">Database</p>
+    <h1>Saved analyses</h1>
+    <p class="lead">Uploaded PDFs are not stored. Each row contains only the generated report summary.</p>
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead><tr><th>Resume file</th><th>Match score</th><th>Matched skills</th><th>Missing skills</th><th>Created</th><th></th></tr></thead>
+        <tbody>
+          {% for analysis in analyses %}
+          <tr><td>{{ analysis.filename }}</td><td>{{ analysis.score }}%</td><td>{{ analysis.matched_skills_count }}</td><td>{{ analysis.missing_skills_count }}</td><td>{{ analysis.created_at }}</td><td><a class="link-button" href="{{ url_for('view_analysis', analysis_id=analysis.id) }}">Open report →</a></td></tr>
+          {% else %}
+          <tr><td colspan="6" class="muted-text">No saved analyses yet. Run an analysis to create your first database record.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

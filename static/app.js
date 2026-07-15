@@ -1,157 +1,52 @@
-const root = document.documentElement;
-const themeToggle = document.querySelector("[data-theme-toggle]");
-const storedTheme = localStorage.getItem("smart-resume-theme");
+if (!document.querySelector('#analysis-form')) {
+  document.querySelector('[data-download-report]')?.addEventListener('click', () => window.print());
+} else {
+const $ = (selector, root = document) => root.querySelector(selector);
+const fileInput = $('#resume'), textarea = $('#job-description'), dropZone = $('[data-drop-zone]');
+const emptyUpload = $('[data-upload-empty]'), selectedUpload = $('[data-upload-selected]');
+const fileName = $('[data-file-name]'), fileError = $('[data-file-error]'), jobError = $('[data-job-error]');
+const submit = $('[data-submit]'), submitText = $('[data-submit-text]'), spinner = $('.spinner', submit);
+let selectedFile = null;
 
-if (storedTheme) {
-    root.dataset.theme = storedTheme;
+function setFile(file) {
+  fileError.textContent = '';
+  if (!file) { selectedFile = null; emptyUpload.hidden = false; selectedUpload.hidden = true; fileInput.value = ''; updateValidity(); return; }
+  if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) { fileError.textContent = 'Please add a PDF resume to continue.'; return; }
+  if (file.size > 5 * 1024 * 1024) { fileError.textContent = 'This file is larger than 5 MB. Choose a smaller PDF.'; return; }
+  selectedFile = file; fileName.textContent = file.name; emptyUpload.hidden = true; selectedUpload.hidden = false; updateValidity();
 }
+function updateCounter() { $('[data-counter]').textContent = `${textarea.value.length.toLocaleString()} characters`; jobError.textContent = ''; updateValidity(); }
+function updateValidity() { const valid = Boolean(selectedFile && textarea.value.trim()); $('[data-mobile-cta]').hidden = !valid; }
+fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+$('[data-file-button]').addEventListener('click', () => fileInput.click());
+$('[data-remove-file]').addEventListener('click', () => setFile(null));
+dropZone.addEventListener('click', e => { if (!e.target.closest('button')) fileInput.click(); });
+dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+['dragenter', 'dragover'].forEach(type => dropZone.addEventListener(type, e => { e.preventDefault(); dropZone.classList.add('dragging'); }));
+['dragleave', 'drop'].forEach(type => dropZone.addEventListener(type, e => { e.preventDefault(); dropZone.classList.remove('dragging'); }));
+dropZone.addEventListener('drop', e => setFile(e.dataTransfer.files[0]));
+textarea.addEventListener('input', updateCounter);
 
-themeToggle?.addEventListener("click", () => {
-    const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
-    root.dataset.theme = nextTheme;
-    localStorage.setItem("smart-resume-theme", nextTheme);
+$('#analysis-form').addEventListener('submit', e => {
+  e.preventDefault(); let valid = true;
+  if (!selectedFile) { fileError.textContent = 'Please add a PDF resume to continue.'; valid = false; }
+  if (!textarea.value.trim()) { jobError.textContent = 'Please paste a job description to generate the match analysis.'; valid = false; }
+  if (!valid) return;
+  submit.disabled = true; submitText.textContent = 'Analyzing resume and role requirements…'; spinner.hidden = false;
+  e.currentTarget.submit();
 });
-
-const textarea = document.querySelector("[data-job-textarea]");
-const counter = document.querySelector("[data-char-counter]");
-
-const updateCounter = () => {
-    if (!textarea || !counter) return;
-    const count = textarea.value.length;
-    counter.textContent = `${count.toLocaleString()} character${count === 1 ? "" : "s"}`;
-};
-
-textarea?.addEventListener("input", updateCounter);
-updateCounter();
-
-const dropZone = document.querySelector("[data-drop-zone]");
-const fileInput = document.querySelector("[data-file-input]");
-const fileName = document.querySelector("[data-file-name]");
-
-const setFileName = () => {
-    if (!fileInput?.files?.length || !fileName) return;
-    fileName.textContent = fileInput.files[0].name;
-};
-
-["dragenter", "dragover"].forEach((eventName) => {
-    dropZone?.addEventListener(eventName, (event) => {
-        event.preventDefault();
-        dropZone.classList.add("is-dragging");
-    });
-});
-
-["dragleave", "drop"].forEach((eventName) => {
-    dropZone?.addEventListener(eventName, (event) => {
-        event.preventDefault();
-        dropZone.classList.remove("is-dragging");
-    });
-});
-
-dropZone?.addEventListener("drop", (event) => {
-    const [file] = event.dataTransfer.files;
-    if (!file || !fileInput) return;
-
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    fileInput.files = transfer.files;
-    setFileName();
-});
-
-fileInput?.addEventListener("change", setFileName);
-
-const form = document.querySelector("#analysis-form");
-const submitButton = document.querySelector("[data-submit-button]");
-const submitButtonText = submitButton?.querySelector(".btn-text");
-const processingPanel = document.querySelector("[data-processing-panel]");
-const progressMessage = document.querySelector("[data-progress-message]");
-const messages = ["Analyzing Resume...", "Extracting Skills...", "Calculating Match Score..."];
-
-form?.addEventListener("submit", (event) => {
-    const selectedFile = fileInput?.files?.[0];
-
-    if (selectedFile) {
-        const isPdf = selectedFile.type === "application/pdf" || selectedFile.name.toLowerCase().endsWith(".pdf");
-        const isAllowedSize = selectedFile.size <= 5 * 1024 * 1024;
-
-        if (!isPdf || !isAllowedSize) {
-            event.preventDefault();
-            alert("Please upload a PDF file under 5MB.");
-            return;
-        }
-    }
-
-    document.body.classList.add("is-processing");
-    submitButton?.classList.add("is-loading");
-    submitButton?.setAttribute("aria-busy", "true");
-    submitButton?.setAttribute("disabled", "true");
-
-    if (submitButtonText) {
-        submitButtonText.textContent = "Analyzing Resume...";
-    }
-
-    if (processingPanel) {
-        processingPanel.hidden = false;
-    }
-
-    let index = 0;
-    if (progressMessage) {
-        progressMessage.textContent = messages[index];
-        window.setInterval(() => {
-            index = (index + 1) % messages.length;
-            progressMessage.textContent = messages[index];
-        }, 1200);
-    }
-});
-
-const scoreCounter = document.querySelector("[data-score-counter]");
-
-if (scoreCounter) {
-    const target = Number(scoreCounter.textContent) || 0;
-    const duration = 900;
-    const startedAt = performance.now();
-
-    const animateScore = (timestamp) => {
-        const progress = Math.min((timestamp - startedAt) / duration, 1);
-        const value = target * progress;
-        scoreCounter.textContent = value.toFixed(target % 1 === 0 ? 0 : 2);
-
-        if (progress < 1) {
-            requestAnimationFrame(animateScore);
-        } else {
-            scoreCounter.textContent = target.toFixed(target % 1 === 0 ? 0 : 2);
-        }
-    };
-
-    requestAnimationFrame(animateScore);
-}
-
-document.querySelector("[data-download-report]")?.addEventListener("click", () => {
-    window.print();
-});
-
-const historyList = document.querySelector("[data-history-list]");
-const result = window.resumeAnalysisResult;
-
-if (historyList && result) {
-    const historyKey = "smart-resume-history";
-    const existingHistory = JSON.parse(localStorage.getItem(historyKey) || "[]");
-    const entry = {
-        score: result.score,
-        resumeSkills: result.resumeSkills,
-        missingSkills: result.missingSkills,
-        createdAt: new Date().toLocaleString()
-    };
-
-    const updatedHistory = [entry, ...existingHistory].slice(0, 5);
-    localStorage.setItem(historyKey, JSON.stringify(updatedHistory));
-
-    historyList.innerHTML = updatedHistory.map((item) => `
-        <div class="history-item">
-            <div>
-                <strong>${Number(item.score).toFixed(2)}% match</strong>
-                <span>${item.createdAt}</span>
-            </div>
-            <span>${item.resumeSkills} skills found · ${item.missingSkills} missing</span>
-        </div>
-    `).join("");
+$('[data-sample]').addEventListener('click', () => { textarea.value = 'Product Designer\nWe are looking for a product designer with strong Figma, user research, prototyping, product strategy, and cross-functional collaboration skills. Experience with B2B SaaS and design systems is preferred.'; updateCounter(); const demo = new File(['Sample resume'], 'jordan-taylor-resume.pdf', { type: 'application/pdf' }); setFile(demo); });
+const $$ = (selector) => [...document.querySelectorAll(selector)];
+$$('[data-analysis-link]').forEach(link => link.addEventListener('click', () => setTimeout(() => dropZone.focus(), 550)));
+ $('[data-sample-focus]').addEventListener('click', () => { const result = $('[data-result]'); result.hidden = false; result.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+const menuButton = $('[data-menu]'), menu = $('#mobile-menu');
+menuButton.addEventListener('click', () => { const open = menu.hidden; menu.hidden = !open; menuButton.setAttribute('aria-expanded', String(open)); });
+$$('#mobile-menu a').forEach(a => a.addEventListener('click', () => { menu.hidden = true; menuButton.setAttribute('aria-expanded', 'false'); }));
+const modal = $('[data-modal]');
+$$('[data-signup]').forEach(button => button.addEventListener('click', () => { modal.hidden = false; $('#email').focus(); }));
+$('[data-close-modal]').addEventListener('click', () => modal.hidden = true);
+modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+$('[data-create-account]').addEventListener('click', () => { const email = $('#email'); $('[data-modal-message]').textContent = email.validity.valid ? 'Thanks — account setup is a demo in this preview.' : 'Please enter a valid work email.'; });
+const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .12 });
+$$('.reveal').forEach(el => observer.observe(el));
 }
