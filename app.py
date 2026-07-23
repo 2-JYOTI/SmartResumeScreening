@@ -76,10 +76,6 @@ def teardown_db(error=None):
     close_db(error)
 
 
-with app.app_context():
-    init_db()
-
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -87,6 +83,7 @@ def home():
 
 @app.route("/history")
 def history():
+    init_db()
     with closing(get_db().cursor()) as cursor:
         cursor.execute("""
             SELECT id, created_at, filename, score, matched_skills_count, missing_skills_count
@@ -120,6 +117,11 @@ def match_resume():
         if os.path.exists(filepath):
             os.remove(filepath)
 
+    # Connect only after the PDF has been analysed.  In particular, do not open
+    # Supabase during application import: a temporary database issue should not
+    # prevent Vercel from serving the homepage.
+    init_db()
+
     values = (filename, analysis["score"], analysis["matched_skills_count"],
               analysis["missing_skills_count"], json.dumps(analysis))
     with closing(get_db().cursor()) as cursor:
@@ -148,6 +150,7 @@ def match_resume():
 
 @app.route("/analysis/<int:analysis_id>")
 def view_analysis(analysis_id):
+    init_db()
     with closing(get_db().cursor()) as cursor:
         placeholder = "%s" if DATABASE_URL else "?"
         cursor.execute(

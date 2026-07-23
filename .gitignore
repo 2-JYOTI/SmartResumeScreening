@@ -4,3 +4,7 @@ __pycache__/
 .DS_Store
 instance/
 .env
+.vercel
+node_modules/
+.next/
+.env.local
